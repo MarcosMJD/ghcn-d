@@ -1,2 +1,2 @@
 # ghcn-d
-Global Historical Climatology Network Pipeline
+Global Historical Climatology Network Data Pipeline
