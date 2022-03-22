@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+    - name: staging
+      database: ghcn-d
+      schema: ghcnd
+      tables:
+        - name: stations
+        - name: countries
