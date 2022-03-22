@@ -35,3 +35,7 @@ models:
   ghcnd:
     # Applies to all files under models/example/
 
+vars:
+  years:
+    - name: '1888'
+    - name: '1889'
