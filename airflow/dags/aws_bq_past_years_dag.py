@@ -17,10 +17,10 @@ BUCKET = os.environ.get("GCP_GCS_BUCKET")
 BIGQUERY_DATASET = os.environ.get("GCP_BQ_DATASET")
 TEMP_STORAGE_PATH = os.getenv('TEMP_STORAGE_PATH', 'not-found')
 START_YEAR = int(os.getenv("START_YEAR", "2022"))
-END_YEAR = int(os.getenv("END_YEAR", "2022"))
 URL_PREFIX = 'https://noaa-ghcn-pds.s3.amazonaws.com'
 
 def format_to_parquet(**kwargs):
+    year = kwargs['year']
     src_file = kwargs['src_file']
     header = kwargs['column_names']
     if not src_file.endswith('.csv'):
@@ -55,30 +55,23 @@ def upload_to_gcs(bucket, object_name, local_file):
 
 default_args = {
     "owner": "airflow",
-    "start_date": datetime.now(),
-    "end_date": datetime.now() + timedelta(days=1),
-    # "start_date": datetime(START_YEAR,1,1),
-    # "end_date": datetime(END_YEAR,1,3),
+    "start_date": datetime(START_YEAR,1,1),
+    "end_date": datetime.now(),
     "depends_on_past": False,
     "retries": 1,
 }
 
-
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_years",
-    # schedule_interval="0 0 2 1 *",
-    schedule_interval="@once",
+    dag_id="data_ingestion_past_years",
+    schedule_interval="0 0 2 1 *",
     default_args=default_args,
-    # catchup=True,
-    catchup=False,
+    catchup=True,
     max_active_runs=3,
     tags=['ghcnd'],
 ) as dag:
 
-
     year = '{{dag_run.logical_date.strftime("%Y")}}'
-    year = 1888
     column_names = ['id','date','element','value','m_flag','q_flag','s_flag','obs_time']
     csv_file_name = f'/{year}.csv'
     dataset_url = URL_PREFIX + '/csv' + csv_file_name
@@ -100,7 +93,8 @@ with DAG(
         python_callable=format_to_parquet,
         op_kwargs={
             "src_file": csv_file_path,
-            "column_names": column_names
+            "column_names": column_names,
+            "year": year
         },
     )
 

@@ -91,7 +91,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_ghcnd_other_datasets",
+    dag_id="data_ingestion_other_datasets",
     schedule_interval="@once",
     default_args=default_args,
     catchup=False,

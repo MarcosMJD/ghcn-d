@@ -25,3 +25,15 @@ variable "BQ_DATASET" {
   type = string
   default = "ghcnd"
 }
+
+variable "BQ_DATASET_DBT_DEV" {
+  description = "BigQuery Dataset that dbt will use for during development"
+  type = string
+  default = "dbt_mjimenez"
+}
+
+variable "BQ_DATASET_DBT_PROD" {
+  description = "BigQuery Dataset that dbt will use for during development"
+  type = string
+  default = "production"
+}
