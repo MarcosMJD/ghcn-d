@@ -1,9 +1,16 @@
-{{ config(materialized='table') }}
+{{ 
+    config(
+        materialized='table',
+        partition_by={
+            "field": "DATE_TRUNC(date, YEAR)"
+        },
+        cluster_by=['country_code', 'id']
+    )
+}}
 
 select
     years.id,
-    years.parsed_date,
-    years.partition_date,
+    years.parsed_date as date,
     years.tmax,
     years.tmin,
     years.prcp,
@@ -18,8 +25,12 @@ select
     stations.elevation,
     stations.country_code,
     countries.name as country_name
-from {{ ref('stg_years_loop') }} as years
+from {{ ref('stg_years_unioned') }} as years
 inner join {{ ref('stg_stations') }} as stations
 on years.id = stations.id
 inner join {{ ref('stg_countries') }} as countries
 on stations.country_code = countries.code
+
+{% if var('is_test_run', default=true) %}
+    limit 500
+{% endif %}

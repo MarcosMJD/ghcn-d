@@ -36,6 +36,8 @@ models:
     # Applies to all files under models/example/
 
 vars:
-  years:
-    - name: '1888'
-    - name: '1889'
+  start_year: 2020
+  end_year: 2021
+  specific_years:
+    - name: '2020'
+    - name: '2021'

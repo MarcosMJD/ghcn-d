@@ -30,7 +30,8 @@
                 m_flag,
                 q_flag,
                 s_flag,
-            from {{ source('staging_years', year) }}
+  
+            from `ghcnd`.`{{year}}`
         )
         select
             id,
@@ -49,7 +50,6 @@
     select 
         id,
         parsed_date,
-        date (extract(year from parsed_date),1,1) as partition_date,
         tmax,
         tmin,
         prcp,
