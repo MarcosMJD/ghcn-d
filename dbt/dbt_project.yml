@@ -35,3 +35,9 @@ models:
   ghcnd:
     # Applies to all files under models/example/
 
+vars:
+  start_year: 2020
+  end_year: 2021
+  specific_years:
+    - name: '2020'
+    - name: '2021'
