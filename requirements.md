@@ -4,13 +4,13 @@
 
 ## Create a new project in GCP
 
-When creating a project, use a project id that is unique, edit it since it can not be modified later on. Use the following projecy name and id: 
+When creating a project, use a project id that is unique, edit it since it can not be modified later on. Use the following project name and id: 
     Project name = project id = ghcn-d
 Select the project
 
 ## Create a service account
 
-Sercice account authorize applications to perform authotised API calls. They are not user accounts of Google Workspace Domain  
+Note: Service account authorize applications to perform authorized API calls. They are not user accounts of Google Workspace Domain  
 Go to IAM -> Service accounts
 - Add one service account
   - Fill the details
@@ -34,11 +34,12 @@ Go to IAM -> Service accounts
 ## Enable APIs for the SDK to communicate though IAM
 https://console.cloud.google.com/apis/library/iam.googleapis.com
 
-## Enable APIs 
-Be sure to have enabled the following APIs for your project in the GCP account:
-- Compute Engine
-- Cloud Storage
-- BigQuery
+## Enable APIs for the 
+Be sure to have enabled the following APIs for your project in the GCP account.
+- https://console.cloud.google.com/apis/library
+  - Compute Engine
+  - Cloud Storage
+  - BigQuery
 
 # DBT
 Create a free dbt cloud account using this link https://www.getdbt.com/signup/
