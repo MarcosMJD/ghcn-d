@@ -108,7 +108,7 @@ with DAG(
         csv_file_path = TEMP_STORAGE_PATH + csv_file_name
         parquet_file_name = txt_file_name.replace('.txt', '.parquet')
         parquet_file_path = TEMP_STORAGE_PATH + parquet_file_name
-        parquet_object_path = f"raw{parquet_file_name}"
+        parquet_object_path = f"{parquet_file_name[1:]}"
         parquet_uri = f"gs://{BUCKET}/{parquet_object_path}"
         external_table_name = f"external_table_{id}"
         table_name = f"{id}"

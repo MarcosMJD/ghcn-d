@@ -78,7 +78,7 @@ with DAG(
     csv_file_path = TEMP_STORAGE_PATH + csv_file_name
     parquet_file_name = csv_file_name.replace('.csv', '.parquet')
     parquet_file_path = TEMP_STORAGE_PATH + parquet_file_name
-    parquet_object_path = f"raw{parquet_file_name}"
+    parquet_object_path = f"{parquet_file_name[1:]}"
     parquet_uri = f"gs://{BUCKET}/{parquet_object_path}"
     external_table_name = f"external_table_{year}"
     table_name = f"{year}"
@@ -103,7 +103,7 @@ with DAG(
         python_callable=upload_to_gcs,
         op_kwargs={
             "bucket": BUCKET,
-            "object_name": f"raw{parquet_file_name}",
+            "object_name": parquet_object_path,
             "local_file": parquet_file_path
         },
     )

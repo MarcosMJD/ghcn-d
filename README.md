@@ -1,5 +1,18 @@
 # Global Historical Climatology Network Daily Data Pipeline
 
+- [Global Historical Climatology Network Daily Data Pipeline](#global-historical-climatology-network-daily-data-pipeline)
+  - [Minimum project requirements](#minimum-project-requirements)
+  - [Problem statement](#problem-statement)
+  - [Main objective](#main-objective)
+  - [Dataset description](#dataset-description)
+  - [Technologies](#technologies)
+  - [Proposal to address the requirements](#proposal-to-address-the-requirements)
+  - [Results](#results)
+  - [Setup and running](#setup-and-running)
+    - [Requirements and setup](#requirements-and-setup)
+    - [Run pipeline](#run-pipeline)
+  - [ToDo](#todo)
+
 ## Minimum project requirements
 
 - Select a dataset.
@@ -23,7 +36,7 @@ Develop the data infrastructure including data pipeline and dashboard for users 
 
 ## Dataset description
 
-### NOAA Global Historical Climatology Network Daily (GHCN-D)
+**NOAA Global Historical Climatology Network Daily (GHCN-D)**  
 [Global Historical Climatology Network - Daily](https://github.com/awslabs/open-data-docs/tree/main/docs/noaa/noaa-ghcn) is a dataset from NOAA that contains daily observations over global land areas (e.g. TMAX, SNOW...). It contains station-based observations from land-based stations worldwide. It is updated daily. The data is in CSV format. Each file corresponds to a year from 1763 to present and is named as such.  
 Each file contains all weather observations from all the stations for all days in that year.  
 Data description of the stations and countries, including geolocation, are available in a separate files.  
@@ -111,7 +124,7 @@ Format of ghcnd-countries.txt
 
 ## Results
 
-
+To Do
 
 
 ## Setup and running
@@ -120,17 +133,19 @@ Terraform and Airflow will run as containers in a VM in Google Cloud.
 Dbt cloud will be used to perform data transformation pipeline
 
 ### Requirements and setup
-1. Google Cloud Platform account and project
-  Follow the instructions in requirements.md
-2. Virtual Machine in Google Cloud Compute Engine.
-  Follow the instructions in setup.md
-3. dbt cloud account  
-  Follow the instructions in requirements.md
+
+Follow the following steps in that order:
+1. Google Cloud Platform account and project:
+  Follow the instructions in setup_gcp.md
+2. Virtual Machine in Google Cloud Compute Engine:
+  Follow the instructions in setup_vm.md
+3. dbt cloud account:
+  Follow the instructions in setup_dbt.md
   
 ### Run pipeline
 
-- Edit setup.sh
-  - Set the parameters START_YEAR. 
+- In the VM, go to the directory ghcn-d and edit setup.sh
+  - At least, set the parameter START_YEAR
 - Run `source setup.sh` to apply the configuration
 - Terraform
   - `cd terraform`
@@ -149,9 +164,18 @@ Dbt cloud will be used to perform data transformation pipeline
   - run data_ingestion_past_years. This may take long.
   - run data_ingestion_current_year for current year (2022)
 - dbt
-  - Edit the dbt job 'dbt build' to run the following command with the specific range of years:  
-    `dbt run --vars "{'is_test_run': false,'start_year':2000,'end_year':2022}"`  
+  - Create a job named 'dbt build' and set the following command with the specific range of years: 
+  - Main menu
+  - Jobs
+  - New job
+  - Name: dbt build
+  - Environment: production
+  - Commands:  `dbt run --vars "{'is_test_run': false,'start_year':2000,'end_year':2022}"`  
   Note: start_year and end_year defines the range of years to be processed. Be coherent with previous setup.  
+  Note: Schedule should be daily since dataset is update daily, but you can test with no schedule - manual trigger.
+  - Save
+  - Run Now
+  fact_observations table will be generated in the production dataset.
 - Google Data Studio
   - Log in datastudio.google.com
   - Create Data Source -> BigQuery

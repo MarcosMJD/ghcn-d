@@ -13,7 +13,7 @@ If you have gitbash, ssh-keygen command is supported.
   - Linux: ~
 - Run the command: 
 
-  - Linux/gitbash  `ssh-keygen -t rsa -f ~/.ssh/KEY_FILENAME -C USER -b 2048`
+  - Linux/gitbash  `ssh-keygen -t rsa -f ~/.ssh/YOUR_USER_NAME -C YOUR_USER_NAME -b 2048`
   - Windows `ssh-keygen -t rsa -f C:\USERS\YOUR_USER_NAME\.ssh\KEY_FILENAME -C YOUR_USER_NAME -b 2048`
 
 This will generate public and private keys.
@@ -23,20 +23,25 @@ Go to Compute Engine: https://console.cloud.google.com/compute and add the publi
 ## VM instance creation
 
 `GCP->Compute Engine->VM instances->Create instance`
+`e2-standard-4`
 `Ubuntu 20.14LTS 30GB`
+
+It is convenient to give it a name
 
 ## Config file creation for SSH connection through Visual Studio Code
 
-Create the config file under ...\.ssh folder. Modify the path file according to your OS:
-Host de-zoomcamp (name of the host/vm)
-
-    Hostname 35.240.98.123 (external ip)
-    User YOUR_USER_NAME
-    IdentityFile c:/Users/YOUR_USER_NAME/.ssh/gcp
+Create the config file under ~\.ssh folder (Modify the path file according to your OS):
+Name of file: "config"
+Contents:
+    Host de-zoomcamp (name of the host/vm)
+    
+        Hostname 35.240.98.123 (external ip)
+        User YOUR_USER_NAME
+        IdentityFile c:/Users/YOUR_USER_NAME/.ssh/gcp
 
 ## Remote access to VM instance for installing all the tools
 
-Use git bash or Windows command or similar.
+Use git bash, Windows command or similar. Change the path accordingly
 
   ssh -i /.ssh/gcp username@externalipofmachine (you can find the external ip of the VM in Google Cloud Console)
   username is the name of the user used when creating the ssh key
@@ -55,17 +60,18 @@ Use git bash or Windows command or similar.
 
 ## Download and install Anaconda for Linux in the vm instance
 
-  `wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh`
-  `bash Anaconda3-2021.11-Linux-x86_64.sh`
-  After installation choose yes to initialize Anaconda (adds in .bashrc some stuff to be executed each time user is logged in)
-  CTRL+D to logout
-  After log in, base environment is already activated.
+    mkdir bin
+    cd bin
+    wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
+    bash Anaconda3-2021.11-Linux-x86_64.sh
+      After installation choose yes to initialize Anaconda (adds some stuff in .bashrc to be executed each time user is logged in)
+    type `source .bashrc` to login again and activate base environment
 
 ## Install docker in vm instance
 
     sudo apt-get update (to fetch the list of packages)
     sudo apt-get install docker.io
-Setup docker to be run without sudo
+Setup docker to be run without sudo:
     sudo groupadd docker
     sudo gpasswd -a $USER docker
     sudo service docker restart
@@ -92,8 +98,12 @@ Add docker-compose to the path variable:
 ...to test or docker-compose version
 
 ## Clone repo in vm instance
-Clone the project repository:
-    git clone https://github.com/MarcosMJD/ghcn-d.git
+Go to the home directory
+`cd` 
+If github, fork the repository:
+    https://github.com/MarcosMJD/ghcn-d.git
+Then, in the vm, clone the forked project repository:
+    git clone https://github.com/YOUR_GIT_USERNAME/ghcn-d.git
 
 ## Setup VSC in local machine to use the VM machine
 

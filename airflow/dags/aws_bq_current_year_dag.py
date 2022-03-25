@@ -16,7 +16,7 @@ PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
 BUCKET = os.environ.get("GCP_GCS_BUCKET")
 BIGQUERY_DATASET = os.environ.get("GCP_BQ_DATASET")
 TEMP_STORAGE_PATH = os.getenv('TEMP_STORAGE_PATH', 'not-found')
-START_YEAR = int(os.getenv("START_YEAR", "2022"))
+START_YEAR = int(os.getenv("START_YEAR", "2021"))
 URL_PREFIX = 'https://noaa-ghcn-pds.s3.amazonaws.com'
 
 def format_to_parquet(**kwargs):
@@ -77,7 +77,7 @@ with DAG(
     csv_file_path = TEMP_STORAGE_PATH + csv_file_name
     parquet_file_name = csv_file_name.replace('.csv', '.parquet')
     parquet_file_path = TEMP_STORAGE_PATH + parquet_file_name
-    parquet_object_path = f"raw{parquet_file_name}"
+    parquet_object_path = f"{parquet_file_name[1:]}"
     parquet_uri = f"gs://{BUCKET}/{parquet_object_path}"
     external_table_name = f"external_table_{year}"
     table_name = f"{year}"
@@ -102,7 +102,7 @@ with DAG(
         python_callable=upload_to_gcs,
         op_kwargs={
             "bucket": BUCKET,
-            "object_name": f"raw{parquet_file_name}",
+            "object_name": parquet_object_path,
             "local_file": parquet_file_path
         },
     )

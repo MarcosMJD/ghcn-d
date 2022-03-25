@@ -1,2 +1,3 @@
 apache-airflow-providers-google
 pyarrow
+pyspark==3.2.0
