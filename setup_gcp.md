@@ -2,6 +2,8 @@
 
 ## Create a GCP account
 
+Google provides 300USD free credit available for 90 days to new accounts.
+
 ## Create a new project in GCP
 
 When creating a project, use a project id that is unique, edit it since it can not be modified later on. Use the following project name and id: 

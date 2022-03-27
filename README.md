@@ -5,12 +5,13 @@
   - [Problem statement](#problem-statement)
   - [Main objective](#main-objective)
   - [Dataset description](#dataset-description)
-  - [Technologies](#technologies)
   - [Proposal to address the requirements](#proposal-to-address-the-requirements)
+    - [Technologies](#technologies)
+    - [Solution](#solution)
   - [Results](#results)
   - [Setup and running](#setup-and-running)
-    - [Requirements and setup](#requirements-and-setup)
-    - [Run pipeline](#run-pipeline)
+    - [Setup](#setup)
+    - [Run pipelines](#run-pipelines)
   - [ToDo](#todo)
 
 ## Minimum project requirements
@@ -79,17 +80,23 @@ Format of ghcnd-countries.txt
 - CODE          1-2    Character
 - NAME         4-50    Character
 
-## Technologies
+## Proposal to address the requirements
+
+### Technologies
 - Cloud: GCP
 - Infrastructure as code (IaC): Terraform
-- Workflow orchestration: Airflow
+- Workflow orchestration: Airflow (ingestion pipeline)
 - Data Wareshouse: BigQuery
 - Data Lake: GCS
-- Batch processing/Transformations: dbt
+- Batch processing/Transformations: dbt (transformation pipeline)
 - Stream processing: None
 - Dashboard: Google Data Studio
 
-## Proposal to address the requirements
+### Solution
+
+Note: Although it is possible to orchestrate dbt cloud job with airflow, this requires upgrade the account to use dbt API, having some cost. To avoid any cost, transformation pipeline is orchestrated as a job in dbt cloud.  
+
+In order to save space and costs, the range of years to be processed can be configured. See [Run pipelines](#run-pipelines).
 - Infraestructure as code: Use Terraform to create a bucket GCS and dataset in BQ
   - ghcdn_raw bucket to store parquet files.
   - dhcdn dataset for the ingestion into BigQuery.
@@ -105,36 +112,59 @@ Format of ghcnd-countries.txt
     To accelerate queries and data processing, each table of year (with observations) has been partitioned by date of observation and clustered by station.  
     Original date type integer from parquet file schema is transformed to date type when generating BigQuery table in order to be able to partition by time.  
 - Transformations: Use dbt to perform unions, joins and aggregations on BQ.  
-  - Staging:  
+  - Staging (materialized=view):  
     - Stations and countries: Create staged model from stations and countries tables in Big Query.  
-      - In the stations model, extract country_code field from the station id field.  
+    - The output will be `stg_stations` and `stg_countries` models.  
+      In the stations model, extract country_code field from the station id field.  
     - Years:
       - Option 1 (discarded). Create staged model (view) for each year. 
         The number of years may be too large. There is a one to one restriction model-table in dbt. So it is pointless to have such a large number of models. 
       - Option 2: Create a fact_observations model that will loop through all BigQuery year tables, transforms them and union all together.  
-        Transformation for each year table: each row will have all observations for a day from a station. This will save space and will perform better. In case of several observations (by a single station) of the same type in the same day, observations are averaged. tmax, tmin and prcp observations are converted to degree or mm. Max and min temperatures outside the range (-60,+60) are discarded.
-        The transformation is implemented as a macro (process_year_table)
-  - Core:
-    - Create fact_observations materialized model by joining years with station and country tables. Generated table will be partitioned by partition_date and clustered by country_code and station id.
+        Staging models:
+        Transformation for each year table:
+        Observations with q_flag (quality flag) are discarded.
+        Each row will have all observations for an specific day from a station. This will save space and will perform better.
+        In case of several observations (by a single station) of the same type in the same day, observations are averaged.
+        tmax and tmin observations are converted to degree. Max and min temperatures outside the range (-60,+60) are discarded.  
+        The transformation is implemented as a macro (process_year_table).  
+        The output will be a model (`stg_years_unioned`) with all years tables transformed and unioned.  
+  - Core (materialized=table):
+    - Create `fact_observations` materialized model by joining `stg_years_unioned` with `stg_stations` and `stg_country` models. Generated table will be partitioned by partition_date and clustered by country_code and station id.
   - Job:
-    - For the convenient creation of the production dataset, a job has been created.
+    - For the convenient creation of the production dataset, a job will be created.
 
 - Dashboard: Connect Google Data Studio to BQ dataset and design dashboard  
 
 
 ## Results
 
-To Do
+Other dataset ingestion pipeline (stations and countries)
+![other datasets ingestion pipeline](./assets/ingestion_pipeline_other_data.PNG)
 
+Past years ingestion pipeline
+<p align="left">
+  <img alt="past years ingestion pipeline" src="./assets/ingestion_pipeline_past_years.PNG" width=65%>
+</p>
+
+Transformation pipeline
+<p align="left">
+  <img alt="Transformation pipeline" src="./assets/transformation_pipeline.PNG" width=75%>
+</p>
+
+Dashboard
+<p align="left">
+  <img alt="dashboard daily" src="./assets/dashboard_daily.PNG" width=75%>
+</p>
+Note: Record counts depends on the selected years.
 
 ## Setup and running
 
 Terraform and Airflow will run as containers in a VM in Google Cloud.
 Dbt cloud will be used to perform data transformation pipeline
 
-### Requirements and setup
+### Setup
 
-Follow the following steps in that order:
+Follow the following steps in the same order:
 1. Google Cloud Platform account and project:
   Follow the instructions in setup_gcp.md
 2. Virtual Machine in Google Cloud Compute Engine:
@@ -142,7 +172,7 @@ Follow the following steps in that order:
 3. dbt cloud account:
   Follow the instructions in setup_dbt.md
   
-### Run pipeline
+### Run pipelines
 
 - In the VM, go to the directory ghcn-d and edit setup.sh
   - At least, set the parameter START_YEAR
@@ -183,3 +213,16 @@ Follow the following steps in that order:
   - Create Report -> Add to report
 
 ## ToDo
+- Documentation in dbt
+- Set up dbt locally in VM and run dbt job from airflow
+- CI/CD
+- Use Spark/Dataproc to perform batch processing instead of using dbt
+- Use dbt with incremental mode to batch process the past years
+- Simulate real-time data ingestion from stations with Apache Kafka
+- Cost analysis (europe-west6)
+  - BigQuery
+    - Active storage $0.025 per GB per month. The first 10 GB is free each month.
+    - Queries (on-demand)	$7.00 per TB. The first 1 TB per month is free.    
+  - GCS
+    - $0.026 per GB per month. First 5GB is free each month.
+- 

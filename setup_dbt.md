@@ -13,7 +13,7 @@ Detailed instructions can be found here: https://github.com/DataTalksClub/data-e
   - Git Clone -> Git URL: git@github.com:YOUR_GIT_USERNAME/ghcn-d.git
   - Import
   - Copy the generated deployment key
-  - Go to your git provider (e.g. github) and edit the configuration of the project ghcn-d. 
+  - Go to your git provider (e.g. github) and edit the configuration of the project ghcn-d:  
     - Settings (Settings tab in the GitHub repository page)
     - Deploy keys
     - Add deploy keys
@@ -23,6 +23,13 @@ Detailed instructions can be found here: https://github.com/DataTalksClub/data-e
       - Add key
   - Continue
   - Skip & Complete
+  - Create a production environment:
+    - Click Main Menu icon -> Environments
+    - New Environment
+    - Name: production
+    - Type: deployment
+    - Dataset: production
+    - Save
 
 
 

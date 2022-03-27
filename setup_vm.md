@@ -100,12 +100,12 @@ Add docker-compose to the path variable:
 ## Clone repo in vm instance
 Go to the home directory
 `cd` 
-If github, fork the repository:
+If github, fork the repository, this will copy the repository in your github account:
     https://github.com/MarcosMJD/ghcn-d.git
 Then, in the vm, clone the forked project repository:
     git clone https://github.com/YOUR_GIT_USERNAME/ghcn-d.git
 
-## Setup VSC in local machine to use the VM machine
+## Setup Visual Studio Code in local machine to use the VM machine
 
 Install Remote-SSH extension in VSC
 Click on green button in left-bottom corner. Connect to host. de-zoomcamp is listed because config file is opened.
@@ -113,6 +113,7 @@ Open remote folder to have access to all repository files.
 Setup VSC to port forward so that we can interact with remote services.
 CTRL+T to see terminal
   Ports tab. Add Port. 8080 to localhost:8080
+You will have terminal opened already to continue performing commands instead of using external bash
 
 ## Install Terraform
 
