@@ -35,7 +35,7 @@
         )
         select
             id,
-            datetrunc('year', parsed_date) as parsed_date,
+            date_trunc(parsed_date, year) as parsed_date,
             m_flag,
             q_flag,
             s_flag,
@@ -49,7 +49,7 @@
     )
     select 
         id,
-        date_trunc(parsed_date, year) as parsed_date,
+        parsed_date,
         tmax,
         tmin,
         prcp,
