@@ -17,7 +17,6 @@ select
     years.snow,
     years.snwd,
     years.m_flag,
-    years.q_flag,
     years.s_flag,
     stations.name as station_name,
     stations.latitude,

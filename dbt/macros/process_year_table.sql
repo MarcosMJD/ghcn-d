@@ -4,6 +4,11 @@
     (
         with exploded as 
         ( 
+            with cleaned as (
+                select * 
+                from `ghcnd`.`{{year}}`
+                where q_flag is null
+            )
             select
                 id,
                 parsed_date,
@@ -16,7 +21,7 @@
                     else null
                 end as tmin,
                 case
-                    when element = 'PRCP' THEN cast(value/10 as numeric)
+                    when element = 'PRCP' THEN cast(value as numeric)
                     else null
                 end as prcp,
                 case
@@ -28,16 +33,14 @@
                     else null
                 end as snwd,
                 m_flag,
-                q_flag,
                 s_flag,
   
-            from `ghcnd`.`{{year}}`
+            from cleaned
         )
         select
             id,
             parsed_date,
             m_flag,
-            q_flag,
             s_flag,
             avg(tmax) over (partition by id, parsed_date) as tmax,
             avg(tmin) over (partition by id, parsed_date) as tmin,
@@ -56,7 +59,6 @@
         snow,
         snwd,
         m_flag,
-        q_flag,
         s_flag
     from averaged
     where rn = 1
