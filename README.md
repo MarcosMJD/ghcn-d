@@ -165,11 +165,11 @@ Dbt cloud will be used to perform data transformation pipeline
 ### Setup
 Follow the following steps in the same order:
 1. Google Cloud Platform account and project:  
-  Follow the instructions in [setup_gcp.md]('./setup_gcp.md')  
+  Follow the instructions in [setup_gcp.md](./setup_gcp.md)  
 2. Virtual Machine in Google Cloud Compute Engine:  
-  Follow the instructions in [setup_vm.md]('/setup_vm.md')  
+  Follow the instructions in [setup_vm.md](/setup_vm.md)  
 3. dbt cloud account:  
-  Follow the instructions in [setup_dbt.md]('./setup_dbt.md')  
+  Follow the instructions in [setup_dbt.md](./setup_dbt.md)  
   
 ### Run pipelines
 
