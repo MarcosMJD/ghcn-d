@@ -7,7 +7,7 @@
             with cleaned as (
                 select * 
                 from `ghcnd`.`{{year}}`
-                where q_flag is null
+                where q_flag = ''
             )
             select
                 id,
