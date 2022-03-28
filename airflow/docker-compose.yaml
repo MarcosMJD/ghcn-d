@@ -63,12 +63,17 @@ x-airflow-common:
     GCP_BQ_DATASET: ${GCP_PROJECT_BQ_DATASET_NAME}
     TEMP_STORAGE_PATH: /opt/airflow/data
     START_YEAR: ${START_YEAR}
+    DBT_API_KEY_FILE: /.dbt/${DBT_API_KEY_FILE_NAME}
+    DBT_ACCOUNT_ID: ${DBT_ACCOUNT_ID}
+    DBT_PROJECT_ID: ${DBT_PROJECT_ID}
+    DBT_JOB_ID: ${DBT_JOB_ID}
 
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ${GOOGLE_APPLICATION_CREDENTIALS_FOLDER}:/.google/credentials:ro
+    - ${DBT_API_KEY_FOLDER}:/.dbt:ro
     - ./data:/opt/airflow/data
 
   user: "${AIRFLOW_UID:-50000}:0"
