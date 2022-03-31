@@ -10,7 +10,7 @@
 
 select
     years.id,
-    years.parsed_date as date,
+    years.date,
     years.tmax,
     years.tmin,
     years.prcp,
