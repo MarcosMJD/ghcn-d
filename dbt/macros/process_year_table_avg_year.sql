@@ -11,7 +11,7 @@
             )
             select
                 id,
-                parsed_date,
+                date,
                 case
                     when element = 'TMAX' THEN if( value > 700, null, if( value < -700, null, cast (value/10 as numeric) ) )
                     else null
@@ -39,20 +39,20 @@
         )
         select
             id,
-            date_trunc(parsed_date, year) as parsed_date,
+            date_trunc(date, year) as date,
             m_flag,
             s_flag,
-            avg(tmax) over (partition by id, extract(year from parsed_date)) as tmax,
-            avg(tmin) over (partition by id, extract(year from parsed_date)) as tmin,
-            avg(prcp) over (partition by id, extract(year from parsed_date)) as prcp,
-            avg(snow) over (partition by id, extract(year from parsed_date)) as snow,
-            avg(snwd) over (partition by id, extract(year from parsed_date)) as snwd,
-            row_number() over (partition by id, extract(year from parsed_date)) as rn
+            avg(tmax) over (partition by id, extract(year from date)) as tmax,
+            avg(tmin) over (partition by id, extract(year from date)) as tmin,
+            avg(prcp) over (partition by id, extract(year from date)) as prcp,
+            avg(snow) over (partition by id, extract(year from date)) as snow,
+            avg(snwd) over (partition by id, extract(year from date)) as snwd,
+            row_number() over (partition by id, extract(year from date)) as rn
         from exploded
     )
     select 
         id,
-        parsed_date,
+        date,
         tmax,
         tmin,
         prcp,
