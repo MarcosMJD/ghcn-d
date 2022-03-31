@@ -1,3 +1,5 @@
+*.jar
+
 *.code-workspace
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -13,7 +15,7 @@ build/
 develop-eggs/
 dist/
 downloads/
-eggs/
+eggs//data
 .eggs/
 lib/
 lib64/

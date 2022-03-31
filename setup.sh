@@ -15,7 +15,7 @@
 
   # This refers to the past years to be processed. Range from 1763 to 2021.
   # WARNING! Please note that from 1961 onwards, each year takes more than 1GiB in Big Query. 
-  START_YEAR=1763
+  START_YEAR=2000
 
   # DBT vars. 
   # These are used to orchestrate dbt job from airflow. If you do want to manually run the job, 

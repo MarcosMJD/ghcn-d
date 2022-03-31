@@ -110,8 +110,9 @@ In order to save space and costs, the range of years to be processed can be conf
   - Dag `aws_gcs_past_years_dag` to ingest observations from last years (until 2021) on a yearly basis with catchup.  
     - This dag can be run only one, since these observations will likely not change anymore.  
   - Dag `aws_gcs_current_year_dag` to ingest observations from current year on a daily basis (catchup of only one day):  
-    To accelerate queries and data processing, each table of year (with observations) has been partitioned by date of observation and clustered by station.  
-    Original date type integer from parquet file schema is transformed to date type when generating BigQuery table in order to be able to partition by time.  
+  
+  To accelerate queries and data processing, each table of year (with observations) has been partitioned by date of observation and clustered by station. 
+  Original date type string from cvs is transformed to date type in order to be able to partition by time.  
 
 - Transformations: Use dbt cloud to perform unions, joins and aggregations on BQ.  
   - Staging (materialized=view):  
@@ -177,6 +178,9 @@ Follow the following steps in the same order:
   Follow the instructions in [setup_dbt.md](./setup_dbt.md)  
   
 ### Run pipelines
+
+Note: If you run pipelines in your own machine, 16GB or RAM are needed  
+In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_past_years_dag.py`  
 
 - 1. In the VM, go to the directory ghcn-d and edit the parameters in setup.sh
   If you wish to orchestrate dbt cloud from airflow, complete the dbt vars section
