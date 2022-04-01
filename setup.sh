@@ -13,8 +13,10 @@
   # E.g. Marcos Jimenez -> mjimenez
   GCP_PROJECT_BQ_DATASET_DBT_DEV=mjimenez
 
-  # This refers to the past years to be processed. Range from 1763 to 2021.
+  # This refers to the past years to be processed.
+  # Range from 1763 to 2021. Current year (2022) is processed separately.
   # WARNING! Please note that from 1961 onwards, each year takes more than 1GiB in Big Query. 
+  # START_YEAT 2000 will generate a table of around 30GiB in size.
   START_YEAR=2000
 
   # DBT vars. 

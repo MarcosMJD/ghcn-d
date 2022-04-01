@@ -27,7 +27,7 @@ csv_schema = {
     'm_flag': 'string',
     'q_flag': 'string',
     's_flag': 'string',
-    'obs_time': 'uint64',
+    'obs_time': 'int64',
 }
 
 def format_to_parquet(**kwargs):

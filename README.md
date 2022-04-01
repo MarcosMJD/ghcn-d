@@ -1,11 +1,10 @@
 # Global Historical Climatology Network Daily Data Pipeline
 
 - [Global Historical Climatology Network Daily Data Pipeline](#global-historical-climatology-network-daily-data-pipeline)
-  - [Minimum project requirements](#minimum-project-requirements)
   - [Problem statement](#problem-statement)
   - [Main objective](#main-objective)
   - [Dataset description](#dataset-description)
-  - [Proposal to address the requirements](#proposal-to-address-the-requirements)
+  - [Proposal](#proposal)
     - [Technologies](#technologies)
     - [Solution](#solution)
   - [Results](#results)
@@ -13,14 +12,6 @@
     - [Setup](#setup)
     - [Run pipelines](#run-pipelines)
   - [ToDo](#todo)
-
-## Minimum project requirements
-
-- Select a dataset.
-- Create a pipeline for processing this dataset and putting it to a datalake.
-- Create a pipeline for moving the data from the lake to a data warehouse.
-- Transform the data in the data warehouse: prepare it for the dashboard.
-- Create a dashboard.
 
 ## Problem statement
 Global historical weather data is large, collected from year 1763 until today. There are over 160K weather stations across the world, each of them generating several observations on a daily basis. This sum up a total of more than 1.75B observations.  
@@ -33,7 +24,12 @@ As an example:
 It is advisable that joins and aggregations will be needed for such kind of analysis.
 
 ## Main objective
-Develop the data infrastructure including data pipeline and dashboard for users to perform advanced analytics tasks on the global historical weather data.
+Develop the data infrastructure including data pipeline and dashboard for users to perform advanced analytics tasks on the global historical weather data:
+- Select a dataset.
+- Create a pipeline for processing this dataset and putting it to a data-lake.
+- Create a pipeline for moving the data from the lake to a data warehouse.
+- Transform the data in the data warehouse: prepare it for the dashboard.
+- Create a dashboard.
 
 ## Dataset description
 
@@ -80,7 +76,7 @@ Format of ghcnd-countries.txt
 - CODE          1-2    Character
 - NAME         4-50    Character
 
-## Proposal to address the requirements
+## Proposal
 
 ### Technologies
 - Cloud: GCP
@@ -96,34 +92,41 @@ Format of ghcnd-countries.txt
 
 In order to save space and costs, the range of years to be processed can be configured. See [Run pipelines](#run-pipelines).
 
-- Infraestructure as code: Use Terraform to create a bucket GCS and dataset in BQ
+**Infrastructure as code:**  
+  Use Terraform to create a bucket GCS and dataset in BQ  
   - ghcdn_raw bucket to store parquet files.
   - dhcdn dataset for the ingestion into BigQuery.
   - dbt_xxxx dataset for dbt cloud development environment.
   - production dataset for dbt cloud production environment. 
   
-- Orchestration: Use Airflow to orchestrate data ingestion and transformation (dbt) pipelines. Orchestration of dbt cloud job with airflow requires access to API (either trial or team or enterprise plans). If you do not have access to API, it is possible ro run dbt cloud job manually.
+**Orchestration:**  
+  
+  Use Airflow to orchestrate data ingestion and transformation (dbt) pipelines. Orchestration of dbt cloud job with airflow requires access to API (either trial or team or enterprise plans). If you do not have access to API, it is possible ro run dbt cloud job manually.
 
-- Data ingestion: Use Airflow to get data from AWS bucket to CGS and then to BigQuery:  
+**Data ingestion:**  
+  
+  Use Airflow to get data from AWS bucket to CGS and then to BigQuery (regular, non external tables).  
+  Although it is possible to use BigQuery external tables (linked to parquet files in GCS) to perform transformations, these may be slower than regular tables. Also, optimization of queries over external tables would require partitioning of parquet files.
   - Dag `aws_gcs_other_datasets_dag` to ingest stations and countries data only once.  
     - stations and countries are txt files, so need to be transformed to csv and then to parquet files.  
   - Dag `aws_gcs_past_years_dag` to ingest observations from last years (until 2021) on a yearly basis with catchup.  
     - This dag can be run only one, since these observations will likely not change anymore.  
   - Dag `aws_gcs_current_year_dag` to ingest observations from current year on a daily basis (catchup of only one day):  
   
-  To accelerate queries and data processing, each table of year (with observations) has been partitioned by date of observation and clustered by station. 
+  To accelerate queries and data processing, each table of year (with observations) has been partitioned by date of observation (so 365 partitions in each table for specific year) and clustered by station. 
   Original date type string from cvs is transformed to date type in order to be able to partition by time.  
 
-- Transformations: Use dbt cloud to perform unions, joins and aggregations on BQ.  
+**Transformations:**  
+  
+  Use dbt cloud to perform unions, joins and aggregations on BQ.  
   - Staging (materialized=view):  
     - Stations and countries: Create staged model from stations and countries tables in Big Query.  
     - The output will be `stg_stations` and `stg_countries` models.  
       In the stations model, extract country_code field from the station id field.  
-    - Years:
+    - Observations:
       - Option 1 (discarded). Create staged model (view) for each year. 
         The number of years may be too large. There is a one to one restriction model-table in dbt. So it is pointless to have such a large number of models. 
       - Option 2: Create a fact_observations model that will loop through all BigQuery year tables, transforms them and union all together.  
-        Staging models:
         Transformation for each year table:
         Observations with q_flag (quality flag) are discarded.
         Each row will have all observations for an specific day from a station. This will save space and will perform better.
@@ -131,13 +134,17 @@ In order to save space and costs, the range of years to be processed can be conf
         tmax and tmin observations are converted to degree. Max and min temperatures outside the range (-70,+70) are discarded.  
         The transformation is implemented as a macro (process_year_table).  
         The output will be a model (`stg_years_unioned`) with all years tables transformed and unioned.  
+       
   - Core (materialized=table):
-    - Create `fact_observations` materialized model by joining `stg_years_unioned` with `stg_stations` and `stg_country` models. Generated table will be partitioned by partition_date and clustered by country_code and station id.
+    - `fact_observations` materialized model by joining `stg_years_unioned` with `stg_stations` and `stg_country` models. Generated table will be partitioned by date (year) and clustered by country_code and station id. This will provide enough performance since it is advisable that the date field will be the most used while partitions will be big enough (e.g. >1GB from 1960), and country and station id will provide geolocation dimension.
+    - In addition, a `fact_observations_yearly` model has been created. This model averages the daily observations over each year,e.g. tmax for 2002 is the average over all daily max temperature observations made during 2002. This will save costs and increment performance in those queries made on a yearly basis.  
   - Job:
-    - For the convenient creation of the production dataset, a job `dbt build`will be created.
-    - This job can be run manually from dbd cloud or through airflow dag `data_transformation_dbt_job`, which will run on a daily basis.
+    - For the convenient creation of the production dataset, a job `dbt build` will be created.
+    - This job can be run manually from dbt cloud or through airflow dag `data_transformation_dbt_job`, which will run on a daily basis.
 
-- Dashboard: Connect Google Data Studio to BQ dataset and design dashboard  
+**Dashboard:**  
+  
+  Connect Google Data Studio to BQ dataset and design dashboard  
 
 
 ## Results
@@ -167,6 +174,8 @@ Terraform and Airflow will run as containers in a VM in Google Cloud.
 Dbt cloud will be used to perform data transformation pipeline.
 Your gcp account will be used and, unless you have google's welcome credit, it will have some cost.
 Your dbt cloud account will be used.
+
+If you wish to install the required tools in your own machine instead of in the VM, you can find detailed instructions here: 
 
 ### Setup
 Follow the following steps in the same order:
@@ -198,9 +207,9 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
   - `docker-compose up airflow-init`
   - `docker-compose up`
   - Open browser. Enter `http://localhost:8080`
-  - run `data_ingestion_ghcn_other_datasets`
-  - run `data_ingestion_past_years`. This will ingest data from START_YEAR until 2021. This may take long.
-  - run `data_ingestion_current_year` for current year (2022)
+  - Enable `data_ingestion_ghcn_other_datasets`
+  - Enable `data_ingestion_past_years`. This will ingest data from START_YEAR until 2021. This may take long.
+  - Enable `data_ingestion_current_year` for current year (2022), after `data_ingestion_past_years` finishes (otherwise too much memory will be used)  
 - 5. dbt cloud  
     `fact_observations` table will be generated in the production dataset. You have two options:
     - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in setup.sh accordingly.
@@ -213,9 +222,9 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 
 ## ToDo
 - Add folder/file repo structure to this documentation
+- Use Spark/Dataproc to perform all batch processing instead of using dbt. i.e. from GCS to BQ avoiding extra storage costs and implementing append in BQ table. Also reading from parquet files directly.
 - Documentation in dbt
 - CI/CD
-- Use Spark/Dataproc to perform all batch processing instead of using dbt. i.e. from GCS to BQ avoiding extra storage costs and implementing append in BQ table
 - Use Spark to perform initial batch processing (GCS -> macro  -> BQ) and use dbt to unions and joins.
 - Use dbt with incremental mode to batch process the past years.
 - Simulate real-time data ingestion from stations with Apache Kafka
@@ -225,4 +234,4 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
     - Queries (on-demand)	$7.00 per TB. The first 1 TB per month is free.    
   - GCS
     - $0.026 per GB per month. First 5GB is free each month.
-- 
+- Add clustering by id in spark (works by country_code, not by id ¿...?)
