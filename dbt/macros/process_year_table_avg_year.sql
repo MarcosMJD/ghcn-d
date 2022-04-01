@@ -17,7 +17,7 @@
                     else null
                 end as tmax,
                 case
-                    when element = 'TMIN' THEN if( value > 600, null, if( value < -600, null, cast (value/10 as numeric) ) )
+                    when element = 'TMIN' THEN if( value > 700, null, if( value < -700, null, cast (value/10 as numeric) ) )
                     else null
                 end as tmin,
                 case
