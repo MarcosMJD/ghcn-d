@@ -63,6 +63,7 @@ x-airflow-common:
     GCP_BQ_DATASET: ${GCP_PROJECT_BQ_DATASET_NAME}
     GCP_REGION: ${GCP_PROJECT_REGION}
     TEMP_STORAGE_PATH: /opt/airflow/data
+    SOURCES_PATH: /opt/airflow/sources
     START_YEAR: ${START_YEAR}
     DBT_API_KEY_FILE: /.dbt/${DBT_API_KEY_FILE_NAME}
     DBT_ACCOUNT_ID: ${DBT_ACCOUNT_ID}
@@ -76,6 +77,7 @@ x-airflow-common:
     - ${GOOGLE_APPLICATION_CREDENTIALS_FOLDER}:/.google/credentials:ro
     - ${DBT_API_KEY_FOLDER}:/.dbt:ro
     - ./data:/opt/airflow/data
+    - ../spark:/opt/airflow/sources
 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:

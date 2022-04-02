@@ -17,7 +17,7 @@
   # Range from 1763 to 2021. Current year (2022) is processed separately.
   # WARNING! Please note that from 1961 onwards, each year takes more than 1GiB in Big Query. 
   # START_YEAT 2000 will generate a table of around 30GiB in size.
-  START_YEAR=2000
+  START_YEAR=2022
 
   # DBT vars. 
   # These are used to orchestrate dbt job from airflow. If you do want to manually run the job, 
