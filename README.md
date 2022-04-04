@@ -93,7 +93,7 @@ Format of ghcnd-countries.txt
 - \airflow: airflow files (docker-compose.yaml, Dockerfile, requirements, dags folder, etc.).  
 - \assets: pictures.  
 - \dbt: dbt files (dbt_project.yml, models, etc.).  
-- \spark: pyspark program for data transformation (option b).  
+- \spark: python program for data transformation (option b).  
 - \terraform: terraform files for the definition of the infrastructure to deploy.  
 - \README.md: this document.  
 - \setup.sh: script to configure the pipeline to run.  
