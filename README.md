@@ -165,30 +165,34 @@ In order to save space and costs, the range of years to be processed can be conf
 
 ## Results
 
-Other dataset ingestion pipeline (stations and countries)
+You can find the dashboard [here](https://datastudio.google.com/reporting/ef092a38-9187-4f4c-b98e-717babcf82b9). 
+Please, note that in order to save space and cost, the number of years is currently restricted to the current century (2000-2022).
+
+**Dashboard**
+<p align="left">
+  <img alt="dashboard daily" src="./assets/dashboard_daily.PNG" width=75%>
+</p>
+
+Note: Record counts depends on the years configured.  
+
+**Other dataset ingestion pipeline (stations and countries)** 
 
 ![other datasets ingestion pipeline](./assets/ingestion_pipeline_other_data.PNG)
 
-Past years ingestion pipeline
+**Past years ingestion pipeline**
 <p align="left">
   <img alt="past years ingestion pipeline" src="./assets/ingestion_pipeline_past_years.PNG" width=75%>
 </p>
 
-Transformation pipeline (option A - dbt cloud)
+**Transformation pipeline (option A - dbt cloud)**
 <p align="left">
   <img alt="Transformation pipeline A" src="./assets/transformation_pipeline.PNG" width=50%>
 </p>
 
-Transformation pipeline (option B - DataProc)
+**Transformation pipeline (option B - DataProc)**
 <p align="left">
   <img alt="Transformation pipeline B" src="./assets/transformation_pipeline_DataProc_Spark.PNG" width=75%>
 </p>
-
-Dashboard
-<p align="left">
-  <img alt="dashboard daily" src="./assets/dashboard_daily.PNG" width=75%>
-</p>
-Note: Record counts depends on the years configured.
 
 ## Setup and running
 
@@ -204,6 +208,9 @@ If you wish to install the required tools in your own machine instead of in the 
 
 
 ### Setup
+
+Note: This setup is not mean to be for production environment. More specific service account roles should be implemented as well as changing default passwords (e.g. `sudo passwd` in your VM to create the root password since VMs in GCE does not provide a password for root user).
+
 Follow the following steps in the same order:
 1. Google Cloud Platform account and project:  
   Follow the instructions in [setup_gcp.md](./setup_gcp.md)  
@@ -232,14 +239,15 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
   - `docker-compose build`
   - `docker-compose up airflow-init`
   - `docker-compose up`
-  - Open browser. Enter `http://localhost:8080`
+  - Open browser. Enter `http://localhost:8080` 
+  - Log in with `user:pass`: `airflow:airflow`  
   - Enable `data_ingestion_ghcn_other_datasets`
   - Enable `data_ingestion_past_years`. This will ingest data from START_YEAR until 2021. This may take long.
   - Enable `data_ingestion_current_year` for current year (2022), after `data_ingestion_past_years` finishes (otherwise too much memory will be used)  
 - 5. Transformation  
   - Option a: dbt cloud  
     `fact_observations` table will be generated in the `production` dataset. You have two options:
-    - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in `setup.sh` (DBT VARS SECTION).
+    - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in `setup.sh` (DBT VARS SECTION). Also do not forget to edit the job in order to set the starting and end years for the job execution.  
     - b) Run `dbt build` from jobs menu in dbt cloud.
   - Option b: Dataproc
     - `fact_observations_spark` table will be generated in the `production` dataset. Run `data_transformation_dataproc_spark_job` from Airflow. Please not that you have to setup env vars in setup.sh accordingly.

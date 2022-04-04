@@ -56,7 +56,7 @@ If you want airflow to orchestrate dbt job, you will need an api key. API is ava
   - Go to profile (upper-right icon)
   - Api access menu
   - Copy the api key
-  - Create a txt file containing the key and save it the VM under ~/.dbt (you can do it with VSCode)
+  - Create a txt file (i.e. apy_key.txt) containing the key and save it the VM under ~/.dbt (you can do it with VSCode)
 
 
 

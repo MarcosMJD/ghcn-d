@@ -71,58 +71,68 @@ Use git bash, Windows command or similar. Change the path accordingly
 
     sudo apt-get update (to fetch the list of packages)
     sudo apt-get install docker.io
-Setup docker to be run without sudo:
+
+### Setup docker to be run without sudo:
+    sudo groupadd docker  
+    sudo usermod -aG docker $USER  
+    newgrp docker  
+    Test with `docker run hello-world` 
+    
+  If this method does not work, use:  
+
     sudo groupadd docker
     sudo gpasswd -a $USER docker
     sudo service docker restart
     source .bashrc
-Test with `docker run hello-world`
+    Test with `docker run hello-world`  
 
 ## Install docker compose in vm instance
 
-https://github.com/docker/compose/releases
-https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64
-    mkdir bin
-    cd bin
-    wget https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -O docker-compose
-    chmod +x docker-compose
-Test with `./docker-compose version`
-Add docker-compose to the path variable:
-    cd .. 
-    nano .bascrc
-    Add export PATH?"${HOME}/bin:${PATH}"
-    Ctro+O to save
-    Ctrl+x
-    source .bashrc
-    which docker-compose
-...to test or docker-compose version
+https://github.com/docker/compose/releases  
+https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64  
+    mkdir bin  
+    cd bin  
+    wget https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -O docker-compose  
+    chmod +x docker-compose  
+Test with `./docker-compose version`  
+Add docker-compose to the path variable:  
+    cd ..  
+    nano .bascrc  
+    Add export PATH?"${HOME}/bin:${PATH}"  
+    Ctro+O to save  
+    Ctrl+x  
+    source .bashrc  
+    which docker-compose  
+...to test or docker-compose version  
 
 ## Clone repo in vm instance
-Go to the home directory
-`cd` 
-If github, fork the repository, this will copy the repository in your github account:
-    https://github.com/MarcosMJD/ghcn-d.git
-Then, in the vm, clone the forked project repository:
-    git clone https://github.com/YOUR_GIT_USERNAME/ghcn-d.git
+Go to the home directory  
+`cd`  
+
+In github, fork the following repository, this will copy the repository in your github account:  
+    https://github.com/MarcosMJD/ghcn-d.git  
+
+Then, in the vm, clone the forked project repository:  
+    git clone https://github.com/YOUR_GIT_USERNAME/ghcn-d.git  
 
 ## Setup Visual Studio Code in local machine to use the VM machine
 
-Install Remote-SSH extension in VSC
-Click on green button in left-bottom corner. Connect to host. de-zoomcamp is listed because config file is opened.
-Open remote folder to have access to all repository files.
-Setup VSC to port forward so that we can interact with remote services.
-CTRL+T to see terminal
-  Ports tab. Add Port. 8080 to localhost:8080
-You will have terminal opened already to continue performing commands instead of using external bash
+Install Remote-SSH extension in VSC  
+Click on green button in left-bottom corner. Connect to host. de-zoomcamp is listed because config file is opened.  
+Open remote folder to have access to all repository files.  
+Setup VSC to port forward so that we can interact with remote services.  
+CTRL+T to see terminal  
+  Ports tab. Add Port. 8080 to localhost:8080  
+You will have terminal opened already to continue performing commands instead of using external bash  
 
 ## Install Terraform
 
-Download the binary to the /bin directory
-    wget https://releases.hashicorp.com/terraform/1.1.4/terraform_1.1.4_linux_amd64.zip
-    cd /bin
-    sudo apt-get install unzip
-    unzip terraform_1.1.4_linux_amd64.zip
-    terraform -version
+Download the binary to the /bin directory  
+    wget https://releases.hashicorp.com/terraform/1.1.4/terraform_1.1.4_linux_amd64.zip  
+    cd /bin  
+    sudo apt-get install unzip  
+    unzip terraform_1.1.4_linux_amd64.zip  
+    terraform -version  
 
 ## GCP SDK 
 
