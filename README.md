@@ -6,12 +6,13 @@
   - [Dataset description](#dataset-description)
   - [Proposal](#proposal)
     - [Technologies](#technologies)
+    - [Repository organization](#repository-organization)
     - [Solution](#solution)
   - [Results](#results)
   - [Setup and running](#setup-and-running)
     - [Setup](#setup)
     - [Run pipelines](#run-pipelines)
-  - [Improvements](#improvements)
+  - [Improvements (ToDo)](#improvements-todo)
 
 ## Problem statement
 Global historical weather data is large, collected from year 1763 until today. There are over 160K weather stations across the world, each of them generating several observations on a daily basis. This sum up a total of more than 1.75B observations.  
@@ -88,10 +89,22 @@ Format of ghcnd-countries.txt
 - Stream processing: None
 - Dashboard: Google Data Studio
 
+### Repository organization
+- \airflow: airflow files (docker-compose.yaml, Dockerfile, requirements, dags folder, etc.).  
+- \assets: pictures.  
+- \dbt: dbt files (dbt_project.yml, models, etc.).  
+- \spark: pyspark program for data transformation (option b).  
+- \terraform: terraform files for the definition of the infrastructure to deploy.  
+- \README.md: this document.  
+- \setup.sh: script to configure the pipeline to run.  
+- \setup_dbt.md: instructions to configure dbt cloud account.  
+- \setup_gcp.md: instructions to configure cgp account.  
+- \setup_vm.md: instructions to setup the VM in GCP.  
+
 ### Solution
 
 <p align="left">
-  <img alt="solution pipeline" src="./assets/solution.jpg" width=75%>
+  <img alt="solution pipeline" src="./assets/solution.jpg" width=1005%>
 </p>
 
 In order to save space and costs, the range of years to be processed can be configured. See [Run pipelines](#run-pipelines).
@@ -162,7 +175,6 @@ In order to save space and costs, the range of years to be processed can be conf
   
   Connect Google Data Studio to BQ dataset and design dashboard  
 
-
 ## Results
 
 You can find the dashboard [here](https://datastudio.google.com/reporting/ef092a38-9187-4f4c-b98e-717babcf82b9). 
@@ -205,7 +217,6 @@ Your gcp account will be used and, unless you have google's welcome credit, it w
 Your dbt cloud account will be used. Developer account is free. However, if you wish to orchestrate it with Airflow, you will need access to dbt API which is only available during free trial and for team and enterprise plans.  
 
 If you wish to install the required tools in your own machine instead of in the VM, the instructions in [setup_gcp.md](./setup_gcp.md) will be a good starting point (you will need adapt some things); also you can find detailed instructions [here](https://github.com/DataTalksClub/data-engineering-zoomcamp):
-
 
 ### Setup
 
@@ -258,7 +269,7 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
      - Create Report -> Add to report
      - Make you own report.
 
-## Improvements
+## Improvements (ToDo)
 
 - Add folder/file repo structure to this documentation
 - Script to automate the setup of the VM.
