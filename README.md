@@ -224,38 +224,39 @@ Follow the following steps in the same order:
 Note: If you run pipelines in your own machine, 16GB or RAM are needed  
 In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_past_years_dag.py`  
 
-- 1. In the VM, go to the directory ghcn-d and edit the parameters in setup.sh
+1. In the VM, go to the directory ghcn-d and edit the parameters in setup.sh
   If you wish to orchestrate dbt cloud from airflow, complete the dbt vars section
-- 2. Run `source setup.sh` to apply the configuration
-- 3. Terraform
-  - `cd terraform`
-  - `terraform init`
-  - `terraform plan`
-  - `terraform apply`
-  - `yes`
-- 4. Airflow
-  - `cd ..`
-  - `cd airflow`
-  - `docker-compose build`
-  - `docker-compose up airflow-init`
-  - `docker-compose up`
-  - Open browser. Enter `http://localhost:8080` 
-  - Log in with `user:pass`: `airflow:airflow`  
-  - Enable `data_ingestion_ghcn_other_datasets`
-  - Enable `data_ingestion_past_years`. This will ingest data from START_YEAR until 2021. This may take long.
-  - Enable `data_ingestion_current_year` for current year (2022), after `data_ingestion_past_years` finishes (otherwise too much memory will be used)  
-- 5. Transformation  
-  - Option a: dbt cloud  
-    `fact_observations` table will be generated in the `production` dataset. You have two options:
-    - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in `setup.sh` (DBT VARS SECTION). Also do not forget to edit the job in order to set the starting and end years for the job execution.  
-    - b) Run `dbt build` from jobs menu in dbt cloud.
-  - Option b: Dataproc
-    - `fact_observations_spark` table will be generated in the `production` dataset. Run `data_transformation_dataproc_spark_job` from Airflow. Please not that you have to setup env vars in setup.sh accordingly.
-- 6. Google Data Studio
-  - Log in datastudio.google.com
-  - Create Data Source -> BigQuery
-  - Select project, dataset and table: ghcn-d -> ghcnd -> fact_observations -> Connect
-  - Create Report -> Add to report
+2. Run `source setup.sh` to apply the configuration
+3. Terraform
+     - `cd terraform`
+     - `terraform init`
+     - `terraform plan`
+     - `terraform apply`
+     - `yes`
+4. Airflow
+     - `cd ..`
+     - `cd airflow`
+     - `docker-compose build`
+     - `docker-compose up airflow-init`
+     - `docker-compose up`
+     - Open browser. Enter `http://localhost:8080` 
+     - Log in with `user:pass`: `airflow:airflow`  
+     - Enable `data_ingestion_ghcn_other_datasets`
+     - Enable `data_ingestion_past_years`. This will ingest data from START_YEAR until 2021. This may take long.
+     - Enable `data_ingestion_current_year` for current year (2022), after `data_ingestion_past_years` finishes (otherwise too much memory will be used)  
+5. Transformation  
+     - Option a: dbt cloud  
+       `fact_observations` table will be generated in the `production` dataset. You have two options:
+       - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in `setup.sh` (DBT VARS SECTION). Also do not forget to edit the job in order to set the starting and end years for the job execution.  
+       - b) Run `dbt build` from jobs menu in dbt cloud.
+     - Option b: Dataproc
+       - `fact_observations_spark` table will be generated in the `production` dataset. Run `data_transformation_dataproc_spark_job` from Airflow. Please not that you have to setup env vars in setup.sh accordingly.
+6. Google Data Studio
+     - Log in datastudio.google.com
+     - Create Data Source -> BigQuery
+     - Select project, dataset and table: ghcn-d -> ghcnd -> fact_observations -> Connect
+     - Create Report -> Add to report
+     - Make you own report.
 
 ## Improvements
 
