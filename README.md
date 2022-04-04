@@ -11,7 +11,7 @@
   - [Setup and running](#setup-and-running)
     - [Setup](#setup)
     - [Run pipelines](#run-pipelines)
-  - [ToDo](#todo)
+  - [Improvements](#improvements)
 
 ## Problem statement
 Global historical weather data is large, collected from year 1763 until today. There are over 160K weather stations across the world, each of them generating several observations on a daily basis. This sum up a total of more than 1.75B observations.  
@@ -90,6 +90,10 @@ Format of ghcnd-countries.txt
 
 ### Solution
 
+<p align="left">
+  <img alt="solution pipeline" src="./assets/solution.jpg" width=75%>
+</p>
+
 In order to save space and costs, the range of years to be processed can be configured. See [Run pipelines](#run-pipelines).
 
 **Infrastructure as code:**  
@@ -116,7 +120,7 @@ In order to save space and costs, the range of years to be processed can be conf
   To accelerate queries and data processing, each table of year (with observations) has been partitioned by date of observation (so 365 partitions in each table for specific year) and clustered by station. 
   Original date type string from cvs is transformed to date type in order to be able to partition by time.  
 
-**Transformations:**  
+**Transformations (option A):**  
   
   Use dbt cloud to perform unions, joins and aggregations on BQ.  
   - Staging (materialized=view):  
@@ -142,6 +146,18 @@ In order to save space and costs, the range of years to be processed can be conf
     - For the convenient creation of the production dataset, a job `dbt build` will be created.
     - This job can be run manually from dbt cloud or through airflow dag `data_transformation_dbt_job`, which will run on a daily basis.
 
+**Transformations (option B):**  
+
+  In order to compare different solutions for the transformation stage, option A uses DataProc (managed solution of Spark&Hadoop) to perform the same transformations of those of option A, but reading directly from the Google Cloud bucket the parquet files.  
+  The output will be tables `fact_observations_spark` and `fact_observations_spark_yearly` in Big Query. In order to control cost and resources in DataProc, a DataProc cluster is created and deleted in each dag execution.  
+  This solution will be orchestrated by Airflow with the `data_transformation_dataproc_spark_job` dag which will perform the following tasks:  
+
+  - `create_dataproc_cluster_task`: At least, 2 nodes, 16GB, 4 vCores each one.
+  - `upload_main_to_gcs_task`: DataProc will get the main program to execute for the job from Google Cloud Storage, so we will upload it in our bucket. The main program is a `python-pyspark` program located in the `spark` folder.
+  - `submit_dataproc_spark_job_task`: A job is submitted to DataProc cluster in order to execute our main program.  
+    The main program processes each year in a loop. The operations are the same than those in option a, however, in order to avoid join operations, append mode is used when writing data to BigQuery tables.
+  - `delete_dataproc_cluster_task`: Delete the cluster in order to avoid unnecessary costs. **Warning!** Dataproc uses temporal buckets to store internal data, once the cluster is deleted, it is possible that these buckets are not deleted, so check you google cloud storage.    
+
 **Dashboard:**  
   
   Connect Google Data Studio to BQ dataset and design dashboard  
@@ -150,32 +166,42 @@ In order to save space and costs, the range of years to be processed can be conf
 ## Results
 
 Other dataset ingestion pipeline (stations and countries)
+
 ![other datasets ingestion pipeline](./assets/ingestion_pipeline_other_data.PNG)
 
 Past years ingestion pipeline
 <p align="left">
-  <img alt="past years ingestion pipeline" src="./assets/ingestion_pipeline_past_years.PNG" width=65%>
+  <img alt="past years ingestion pipeline" src="./assets/ingestion_pipeline_past_years.PNG" width=75%>
 </p>
 
-Transformation pipeline
+Transformation pipeline (option A - dbt cloud)
 <p align="left">
-  <img alt="Transformation pipeline" src="./assets/transformation_pipeline.PNG" width=50%>
+  <img alt="Transformation pipeline A" src="./assets/transformation_pipeline.PNG" width=50%>
+</p>
+
+Transformation pipeline (option B - DataProc)
+<p align="left">
+  <img alt="Transformation pipeline B" src="./assets/transformation_pipeline_DataProc_Spark.PNG" width=75%>
 </p>
 
 Dashboard
 <p align="left">
   <img alt="dashboard daily" src="./assets/dashboard_daily.PNG" width=75%>
 </p>
-Note: Record counts depends on the selected years.
+Note: Record counts depends on the years configured.
 
 ## Setup and running
 
-Terraform and Airflow will run as containers in a VM in Google Cloud.
-Dbt cloud will be used to perform data transformation pipeline.
+Terraform and Airflow will run in a VM in Google Cloud. Airflow will run as docker containers.
+For data transformation:  
+- Option a: Dbt cloud will be used to perform data transformation pipeline.  
+- Option b: Dataproc cluster will be used to run a pyspark jop.  
+  
 Your gcp account will be used and, unless you have google's welcome credit, it will have some cost.
-Your dbt cloud account will be used.
+Your dbt cloud account will be used. Developer account is free. However, if you wish to orchestrate it with Airflow, you will need access to dbt API which is only available during free trial and for team and enterprise plans.  
 
-If you wish to install the required tools in your own machine instead of in the VM, you can find detailed instructions here: 
+If you wish to install the required tools in your own machine instead of in the VM, the instructions in [setup_gcp.md](./setup_gcp.md) will be a good starting point (you will need adapt some things); also you can find detailed instructions [here](https://github.com/DataTalksClub/data-engineering-zoomcamp):
+
 
 ### Setup
 Follow the following steps in the same order:
@@ -210,22 +236,28 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
   - Enable `data_ingestion_ghcn_other_datasets`
   - Enable `data_ingestion_past_years`. This will ingest data from START_YEAR until 2021. This may take long.
   - Enable `data_ingestion_current_year` for current year (2022), after `data_ingestion_past_years` finishes (otherwise too much memory will be used)  
-- 5. dbt cloud  
-    `fact_observations` table will be generated in the production dataset. You have two options:
-    - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in setup.sh accordingly.
+- 5. Transformation  
+  - Option a: dbt cloud  
+    `fact_observations` table will be generated in the `production` dataset. You have two options:
+    - a) Run `data_transformation_dbt_job` from Airflow. Please not that you have to setup env vars in `setup.sh` (DBT VARS SECTION).
     - b) Run `dbt build` from jobs menu in dbt cloud.
+  - Option b: Dataproc
+    - `fact_observations_spark` table will be generated in the `production` dataset. Run `data_transformation_dataproc_spark_job` from Airflow. Please not that you have to setup env vars in setup.sh accordingly.
 - 6. Google Data Studio
   - Log in datastudio.google.com
   - Create Data Source -> BigQuery
   - Select project, dataset and table: ghcn-d -> ghcnd -> fact_observations -> Connect
   - Create Report -> Add to report
 
-## ToDo
+## Improvements
+
 - Add folder/file repo structure to this documentation
-- Use Spark/Dataproc to perform all batch processing instead of using dbt. i.e. from GCS to BQ avoiding extra storage costs and implementing append in BQ table. Also reading from parquet files directly.
+- Script to automate the setup of the VM.
+- Check why Dataproc buckets are not deleted after cluster deletion.
+- Check low CPU usage in DataProc clusters.
 - Documentation in dbt
 - CI/CD
-- Use Spark to perform initial batch processing (GCS -> macro  -> BQ) and use dbt to unions and joins.
+- Use Spark to perform initial batch processing (GCS -> macro  -> BQ) and use dbt to unions and joins?
 - Use dbt with incremental mode to batch process the past years.
 - Simulate real-time data ingestion from stations with Apache Kafka
 - Cost analysis (europe-west6)
@@ -234,4 +266,5 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
     - Queries (on-demand)	$7.00 per TB. The first 1 TB per month is free.    
   - GCS
     - $0.026 per GB per month. First 5GB is free each month.
-- Add clustering by id in spark (works by country_code, not by id ¿...?)
+- Add clustering by id in spark when generating fact table (works by country_code, not by id ¿...?)
+- Fix skark can not partition yearly fact table by date

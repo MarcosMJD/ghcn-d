@@ -69,6 +69,7 @@ x-airflow-common:
     DBT_ACCOUNT_ID: ${DBT_ACCOUNT_ID}
     DBT_PROJECT_ID: ${DBT_PROJECT_ID}
     DBT_JOB_ID: ${DBT_JOB_ID}
+    GCP_DATAPROC_CLUSTER: ${GCP_PROJECT_DATAPROC_CLUSTER_NAME}
 
   volumes:
     - ./dags:/opt/airflow/dags

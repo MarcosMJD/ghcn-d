@@ -17,9 +17,9 @@
   # Range from 1763 to 2021. Current year (2022) is processed separately.
   # WARNING! Please note that from 1961 onwards, each year takes more than 1GiB in Big Query. 
   # START_YEAT 2000 will generate a table of around 30GiB in size.
-  START_YEAR=2022
+  START_YEAR=2000
 
-  # DBT vars. 
+  # DBT VARS SECTION
   # These are used to orchestrate dbt job from airflow. If you do want to manually run the job, 
   # there is no need to set these vars.
   # account_id, project_id and job_id are those in the url of the job page created when setting up dbt account
@@ -31,6 +31,8 @@
   # Folder where the dbt api key file is stored (when setting up dbt)
   DBT_API_KEY_FOLDER="/home/marcos/.dbt/"
   DBT_API_KEY_FILE_NAME="api_key.txt"
+
+  GCP_PROJECT_DATAPROC_CLUSTER_NAME='ghcnd'
 
   #
   # DO NOT edit the following

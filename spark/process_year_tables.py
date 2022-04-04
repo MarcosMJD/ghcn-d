@@ -113,7 +113,9 @@ def process_year(year, mode, df_stations, df_countries):
       ) \
       .withColumn("prcp", F.when(df.element == "PRCP", df.value.cast("double")).otherwise(None)) \
       .withColumn("snow", F.when(df.element == "SNOW", df.value.cast("double")).otherwise(None)) \
-      .withColumn("snwd", F.when(df.element == "SNWD", df.value.cast("double")).otherwise(None)) \
+      .withColumn("snwd", F.when(df.element == "SNWD", df.value.cast("double")).otherwise(None))
+
+  df_daily = df \
       .groupBy("id", "date").agg( 
           F.avg("tmax"),
           F.avg("tmin"),
@@ -131,7 +133,35 @@ def process_year(year, mode, df_stations, df_countries):
   # Note: toDF after joins, otherwise join will raise error
   # Note: toDF since BQ does not allow field names with () and average generates these kind of names avg(tmax)
 
-  df.write \
+  df_yearly =  df \
+    .withColumn("date", F.trunc("date", "year")) \
+    .groupBy("id", "date").agg( 
+      F.avg("tmax"),
+      F.avg("tmin"),
+      F.avg("prcp"),
+      F.avg("snow"),
+      F.avg("snwd"),
+      F.first("m_flag"),
+      F.first("s_flag")
+    ) \
+    .join(df_stations, df.id == df_stations.station_id, "inner") \
+    .join(df_countries, df_stations.country_code == df_countries.code, "inner") \
+    .drop ('station_id', 'code') \
+    .toDF('id','date','tmax','tmin','prcp','snow','snwd','m_flag','s_flag','latitude','longitude','elevation','station_name','country_code','country_name') \
+
+  # For some reason, partition by date does not work after F.year("date"). This has to be fixed
+  # Also, partition is needed for clustering
+  df_yearly.write \
+    .format("bigquery") \
+    .mode(mode) \
+    .option("clusteredFields", "date, country_code") \
+    .option('project','ghcn-d') \
+    .option('dataset','production') \
+    .option('table','fact_observations_spark_yearly') \
+    .save()
+    
+  
+  df_daily.write \
     .format("bigquery") \
     .mode(mode) \
     .option("partitionField", "date") \
@@ -141,10 +171,13 @@ def process_year(year, mode, df_stations, df_countries):
     .option('dataset','production') \
     .option('table','fact_observations_spark') \
     .save()
+  
+
 
   print(f'process {year} done')
 
 """
+# USe if needed to read from BigQuery instead of GCS
 df_stations = spark.read.format('bigquery') \
   .option('project','ghcn-d') \
   .option('dataset','ghcnd') \
