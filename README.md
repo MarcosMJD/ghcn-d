@@ -83,9 +83,9 @@ Format of ghcnd-countries.txt
 - Cloud: GCP
 - Infrastructure as code (IaC): Terraform
 - Workflow orchestration: Airflow (ingestion pipeline and transformation pipeline)
-- Data Wareshouse: BigQuery
+- Data Warehouse: BigQuery
 - Data Lake: GCS
-- Batch processing/Transformations: dbt cloud (transformation pipeline)
+- Batch processing/Transformations: dbt cloud or DataProc/Spark (transformation pipeline)
 - Stream processing: None
 - Dashboard: Google Data Studio
 
