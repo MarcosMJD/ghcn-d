@@ -21,7 +21,7 @@
                     else null
                 end as tmin,
                 case
-                    when element = 'PRCP' THEN cast(value as numeric)
+                    when element = 'PRCP' THEN cast(value/10 as numeric)
                     else null
                 end as prcp,
                 case
