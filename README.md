@@ -178,7 +178,8 @@ In order to save space and costs, the range of years to be processed can be conf
 ## Results
 
 You can find the dashboard [here](https://datastudio.google.com/reporting/ef092a38-9187-4f4c-b98e-717babcf82b9). 
-Please, note that in order to save space and cost, the number of years is currently restricted to the current century (2000-2022).
+Please, note that in order to save space and minimize cost, the number of years in this dashboard is [2000-2022].
+For security purposes, access is restricted (please ask me for access).
 
 **Dashboard**
 <p align="left">
