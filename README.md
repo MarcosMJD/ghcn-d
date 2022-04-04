@@ -104,7 +104,7 @@ Format of ghcnd-countries.txt
 ### Solution
 
 <p align="left">
-  <img alt="solution pipeline" src="./assets/solution.jpg" width=1005%>
+  <img alt="solution pipeline" src="./assets/solution.jpg" width=100%>
 </p>
 
 In order to save space and costs, the range of years to be processed can be configured. See [Run pipelines](#run-pipelines).
@@ -182,7 +182,7 @@ Please, note that in order to save space and cost, the number of years is curren
 
 **Dashboard**
 <p align="left">
-  <img alt="dashboard daily" src="./assets/dashboard_daily.PNG" width=75%>
+  <img alt="dashboard daily" src="./assets/dashboard_daily.PNG" width=100%>
 </p>
 
 Note: Record counts depends on the years configured.  
