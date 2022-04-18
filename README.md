@@ -272,11 +272,15 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 
 ## Improvements (ToDo)
 
-- Add folder/file repo structure to this documentation
+- Find a solution to process all years from 1760. 
+  - Create huge external table, or regular table from parquet files. Then process in a single model everything.
+  - Fix in dbt with incremental model or even better dynamic models. Or just large number of models materialized and unioned in the last stage (the problem with views and final materialized model is that it is too large query or too complex to process). Delete temporal tables.
+  - Fix spark/Dataproc problems and improve performance.
+- Modify Terraform to create VM with script to setup docker and so on. Terraform may be run in a small instance or locally.
 - Script to automate the setup of the VM.
 - Check why Dataproc buckets are not deleted after cluster deletion.
 - Check low CPU usage in DataProc clusters.
-- Documentation in dbt
+- Documentation in dbt.
 - CI/CD
 - Use Spark to perform initial batch processing (GCS -> macro  -> BQ) and use dbt to unions and joins?
 - Use dbt with incremental mode to batch process the past years.

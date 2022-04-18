@@ -96,14 +96,14 @@ https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-
     chmod +x docker-compose  
 Test with `./docker-compose version`  
 Add docker-compose to the path variable:  
+
     cd ..  
-    nano .bascrc  
-    Add export PATH?"${HOME}/bin:${PATH}"  
-    Ctro+O to save  
-    Ctrl+x  
-    source .bashrc  
-    which docker-compose  
-...to test or docker-compose version  
+    nano .bashrc to edit .bashrc 
+    Add export PATH="${HOME}/bin:${PATH}"  
+    Ctrl+O to save  
+    Ctrl+x to exit
+    source .bashrc  to execute .bashrc without having to logout and login again (reopen an interactive session)
+    which docker-compose to test or docker-compose version  
 
 ## Clone repo in vm instance
 Go to the home directory  
@@ -132,7 +132,9 @@ Download the binary to the /bin directory
     cd /bin  
     sudo apt-get install unzip  
     unzip terraform_1.1.4_linux_amd64.zip  
-    terraform -version  
+    chmod +x terraform
+    ./terraform -version  
+
 
 ## GCP SDK 
 
