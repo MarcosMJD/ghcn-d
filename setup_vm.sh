@@ -47,6 +47,13 @@ cd bin
 wget https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -O docker-compose
 sudo chmod +x docker-compose
 
+
+echo -e "\nInstalling Terraform...\n"
+wget https://releases.hashicorp.com/terraform/1.1.4/terraform_1.1.4_linux_amd64.zip
+sudo apt-get install unzip
+unzip terraform_1.1.4_linux_amd64.zip
+rm terraform_1.1.4_linux_amd64.zip
+
 echo -e "\nInstalling java 11 jre...\n"
 ## jdk files and Variables
 sudo apt-get install -y --no-install-recommends \
@@ -94,6 +101,7 @@ echo -e 'export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.3-src.zip:$PYTH
 # However, this eval hack does not work when executing ./setup.sh but works when executing . ./setup.sh (which means run script in current shell)
 # So it is better just to use newgrp at the end of the script
 
+terraform -version
 sudo docker --version
 docker-compose version
 echo "anaconda-navigator version $(anaconda-navigator --version)"
