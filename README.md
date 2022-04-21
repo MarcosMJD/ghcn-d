@@ -272,24 +272,27 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 
 ## Improvements (ToDo)
 
-- Find a solution to process all years from 1760. 
-  - Create huge external table, or regular table from parquet files. Then process in a single model everything.
-  - Fix in dbt with incremental model or even better dynamic models. Or just large number of models materialized and unioned in the last stage (the problem with views and final materialized model is that it is too large query or too complex to process). Delete temporal tables.
-  - Fix spark/Dataproc problems and improve performance.
+- Modify setup_vm script to download bq and cgs connectors.
+- Find a solution to better process all years from 1760.
+  - Create huge external table, or regular table from parquet files. Then process it in a single model everything.
+  - Fix in dbt with incremental model or even better, dynamic models.
+  - Or just large number of models materialized and unioned in the last stage (the problem with views and final materialized model is that it is too large query or too complex to process). Delete temporal tables. Alternative: Do not union, but create bq table from *tables directly in bq, but calling from dbt.
 - Modify Terraform to create VM with script to setup docker and so on. Terraform may be run in a small instance or locally.
-- Script to automate the setup of the VM.
-- Check why Dataproc buckets are not deleted after cluster deletion.
-- Check low CPU usage in DataProc clusters.
 - Documentation in dbt.
-- CI/CD
-- Use Spark to perform initial batch processing (GCS -> macro  -> BQ) and use dbt to unions and joins?
-- Use dbt with incremental mode to batch process the past years.
-- Simulate real-time data ingestion from stations with Apache Kafka
-- Cost analysis (europe-west6)
-  - BigQuery
+- CI/CD.
+- Cost analysis (europe-west6).
+  - BigQuery.
     - Active storage $0.025 per GB per month. The first 10 GB is free each month.
     - Queries (on-demand)	$7.00 per TB. The first 1 TB per month is free.    
   - GCS
     - $0.026 per GB per month. First 5GB is free each month.
-- Add clustering by id in spark when generating fact table (works by country_code, not by id ¿...?)
-- Fix skark can not partition yearly fact table by date
+- Fix spark/dataproc problems and improve performance
+  - Add clustering by id in spark when generating fact table (works by country_code, not by id ¿...?)
+  - Fix spark running locally out of memory (java heap). Even with 2022 year!!!
+  - Fix spark can not partition yearly fact table by date
+  - Check why Dataproc buckets are not deleted after cluster deletion.
+  - Check low CPU usage in DataProc clusters.
+- Local solution with postgres
+- Custom dashboard with BQ client for python. (bq api use) or postgresql client for python.
+  - Develop Django app for this dashboard.
+  
