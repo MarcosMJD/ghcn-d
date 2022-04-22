@@ -295,4 +295,6 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 - Local solution with postgres
 - Custom dashboard with BQ client for python. (bq api use) or postgresql client for python.
   - Develop Django app for this dashboard.
+- Check cloud solutions from other providers (AWS)
+  - E.g. Check AWS batch to run AWS batch job from a docker image. Airflow orchestrates the job, but the job is executed by AWS. E.g. Ingestion pipeline with all tasks in a single python program?
   
