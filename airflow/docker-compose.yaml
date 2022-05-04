@@ -70,6 +70,7 @@ x-airflow-common:
     DBT_PROJECT_ID: ${DBT_PROJECT_ID}
     DBT_JOB_ID: ${DBT_JOB_ID}
     GCP_DATAPROC_CLUSTER: ${GCP_PROJECT_DATAPROC_CLUSTER_NAME}
+    AIRFLOW_CONN_POSTGRES_DEFAULT: 'postgresql://root:root@postgres-service-ghcnd:5432/ghcn-d'
 
   volumes:
     - ./dags:/opt/airflow/dags
@@ -130,6 +131,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - default
+      - ghcnd
 
   airflow-init:
     <<: *airflow-common
@@ -223,3 +227,8 @@ services:
 
 volumes:
   postgres-db-volume:
+
+networks:
+  ghcnd:
+    external: true
+    name: ghcnd

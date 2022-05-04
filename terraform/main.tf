@@ -5,7 +5,21 @@ terraform {
     google = {
       source  = "hashicorp/google"
     }
+    postgresql = {
+      source = "cyrilgdn/postgresql"
+      version = "1.15.0"
+    }
   }
+}
+
+provider "postgresql" {
+  host            = "localhost"
+  port            = 5432
+  database        = "postgres"
+  username        = "root"
+  password        = "root"
+  sslmode         = "disable"
+  connect_timeout = 15
 }
 
 provider "google" {
@@ -14,6 +28,16 @@ provider "google" {
   // credentials = file(var.credentials)  # Use this if you do not want to set env-var GOOGLE_APPLICATION_CREDENTIALS
 }
 
+resource "postgresql_database" "ghcn-d" {
+  name = "ghcn-d"
+}
+
+resource "postgresql_schema" "ghcn-d" {
+  name  = "ghcnd"
+  database = "ghcn-d"
+}
+
+/*
 # Data Lake Bucket
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
@@ -59,4 +83,4 @@ resource "google_bigquery_dataset" "dataset_dbt_prod" {
   project    = var.PROJECT
   location   = var.REGION
 }
-
+*/

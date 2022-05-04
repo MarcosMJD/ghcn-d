@@ -33,7 +33,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 # using the `{{ config(...) }}` macro.
 models:
   ghcnd:
-    # Applies to all files under models/example/
+    staging:
+      materialized: view
+    core:
+      materialized: table
 
 vars:
   start_year: 2007

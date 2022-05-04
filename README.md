@@ -272,29 +272,61 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 
 ## Improvements (ToDo)
 
-- Modify setup_vm script to download bq and cgs connectors.
-- Find a solution to better process all years from 1760.
-  - Create huge external table, or regular table from parquet files. Then process it in a single model everything.
-  - Fix in dbt with incremental model or even better, dynamic models.
-  - Or just large number of models materialized and unioned in the last stage (the problem with views and final materialized model is that it is too large query or too complex to process). Delete temporal tables. Alternative: Do not union, but create bq table from *tables directly in bq, but calling from dbt.
-- Modify Terraform to create VM with script to setup docker and so on. Terraform may be run in a small instance or locally.
-- Documentation in dbt.
-- CI/CD.
-- Cost analysis (europe-west6).
+- Local solution with postgres (in progress)
+  - Launch docker container with postgres server (done)
+  - Create database with Terraform (done)
+  - Create network to connect to airflow executors (done)
+  - Create dags for ingestions (done)
+  - Install and run local dbt
+   
+- Documentation in dbt
+- CI/CD
+ 
+- Setup
+
+  - Parametrize local postgres dag solution better.
+  - Parametrize terraform to support local or cloud solutions.
+  - Modify setup_vm script to download bq and cgs connectors.
+  - Modify Terraform to create VM with script to setup docker and so on. Terraform may be run in a small instance or locally.
+
+- Project documentation
+  
+  - Explain local (windows) and cloud solutions
+  - Update documentation to include setup_vm.
+  - Update documentation to support local windows setup.bat project.
+  - Generate documentation for setup local windows machine
+  - Generate documentation for local solution
+
+- Custom dashboard with BQ client for python. (bq api use) or postgresql client for python.
+  - Develop Django app for this dashboard.
+
+- Check cloud solutions from other providers (AWS)
+  - E.g. Check AWS batch to run AWS batch job from a docker image. Airflow orchestrates the job, but the job is executed by AWS. E.g. Ingestion pipeline with all tasks in a single python program?
+
+- Improvements
+  
+  - Find a solution to better process all years from 1760.
+    - Create huge external table, or regular table from parquet files. Then process it in a single model everything.
+    - Fix in dbt with incremental model or even better, dynamic models.
+    - Or just large number of models materialized and unioned in the last stage (the problem with views and final materialized model is that it is too large query or too complex to process). Delete temporal tables. Alternative: Do not union, but create bq table from *tables directly in bq, but calling from dbt.
+  - Fix spark/dataproc problems and improve performance
+    - Add clustering by id in spark when generating fact table (works by country_code, not by id ¿...?)
+    - Fix spark running locally out of memory (java heap). Even with 2022 year!!!
+    - Fix spark can not partition yearly fact table by date
+    - Check why Dataproc buckets are not deleted after cluster deletion.
+    - Check low CPU usage in DataProc clusters.
+  - Improve the performance of postgres
+    - Partition.
+    - Clustering.
+    - Implement create or replace table when creating tables.
+  
+- Cost analysis (europe-west6)
+  
   - BigQuery.
     - Active storage $0.025 per GB per month. The first 10 GB is free each month.
     - Queries (on-demand)	$7.00 per TB. The first 1 TB per month is free.    
   - GCS
     - $0.026 per GB per month. First 5GB is free each month.
-- Fix spark/dataproc problems and improve performance
-  - Add clustering by id in spark when generating fact table (works by country_code, not by id ¿...?)
-  - Fix spark running locally out of memory (java heap). Even with 2022 year!!!
-  - Fix spark can not partition yearly fact table by date
-  - Check why Dataproc buckets are not deleted after cluster deletion.
-  - Check low CPU usage in DataProc clusters.
-- Local solution with postgres
-- Custom dashboard with BQ client for python. (bq api use) or postgresql client for python.
-  - Develop Django app for this dashboard.
-- Check cloud solutions from other providers (AWS)
-  - E.g. Check AWS batch to run AWS batch job from a docker image. Airflow orchestrates the job, but the job is executed by AWS. E.g. Ingestion pipeline with all tasks in a single python program?
   
+- Bugs
+  - stations source text file has wmo_id. This field shopud be integer type
