@@ -298,10 +298,14 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
   - Generate documentation for setup local windows machine applications.  
   - Generate documentation for local solution.  
     - Local postgres db in a separate container. 
-    - Airflow accessing to local network.
-    - Specific dags for local ingestions.
     - dbt core installation and usage to run transformation pipelines.
-
+    - setup.bat to setup project vars in Windows
+    - Launch local postgres.
+    - Airflow accessing to local network created by local postgres.
+    - Specific dags for local ingestions.
+    - Run airflow dags 
+    - Run dbt core command (manually)
+    
 - Custom dashboard with BQ client for python. (bq api use) or postgresql client for python.
   - Develop Django app for this dashboard.
 
