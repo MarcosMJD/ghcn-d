@@ -7,10 +7,10 @@ version: '1.0.0'
 config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
-profile: 'default'
+profile: 'ghcnd'
 
 # These configurations specify where dbt should look for different types of files.
-# The `source-paths` config, for example, states that models in this project can be
+# The `model-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -33,14 +33,15 @@ clean-targets:         # directories to be removed by `dbt clean`
 # using the `{{ config(...) }}` macro.
 models:
   ghcnd:
+    # Config indicated by + and applies to all files under models/example/
     staging:
-      materialized: view
+      +materialized: view
     core:
-      materialized: table
+      +materialized: table
 
 vars:
-  start_year: 2007
-  end_year: 2008
+  start_year: 1770
+  end_year: 1771
   specific_years_tables:
-    - name: '2007'
-    - name: '2008'
+    - name: '1770'
+    - name: '1780'

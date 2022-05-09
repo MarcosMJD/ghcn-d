@@ -1,0 +1,24 @@
+ghcnd:
+  outputs:
+
+    dev:
+      type: postgres
+      threads: 4
+      host: localhost
+      port: 5432
+      user: root
+      pass: root
+      dbname: ghcn-d
+      schema: dbt_dev
+
+    prod:
+      type: postgres
+      threads: 4
+      host: localhost
+      port: 5432
+      user: root
+      pass: root
+      dbname: ghcn-d
+      schema: production
+
+  target: dev

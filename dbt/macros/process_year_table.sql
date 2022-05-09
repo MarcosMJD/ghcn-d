@@ -33,7 +33,7 @@
                     else null
                 end as snwd,
                 m_flag,
-                s_flag,
+                s_flag
   
             from cleaned
         )

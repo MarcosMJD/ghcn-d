@@ -272,15 +272,16 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 
 ## Improvements (ToDo)
 
-- Local solution with postgres (in progress)
+- <strike>Local solution with postgres: ingestion and dbt~~
   - Launch docker container with postgres server (done)
   - Create database with Terraform (done)
   - Create network to connect to airflow executors (done)
   - Create dags for ingestions (done)
-  - Install and run local dbt
+  - Install and run local dbt with docker (done)</strike>
    
+- Orchestrate dbt local through airflow. By including dbtcore in airflow executor?
 - Documentation in dbt
-- CI/CD
+- CI/CD in dbt
  
 - Setup
 
@@ -291,11 +292,15 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
 
 - Project documentation
   
-  - Explain local (windows) and cloud solutions
-  - Update documentation to include setup_vm.
-  - Update documentation to support local windows setup.bat project.
-  - Generate documentation for setup local windows machine
-  - Generate documentation for local solution
+  - Explain local (windows) and cloud solutions.  
+  - ~~Update documentation to include setup_vm.~~  
+  - Update documentation to support local windows setup.bat project.  
+  - Generate documentation for setup local windows machine applications.  
+  - Generate documentation for local solution.  
+    - Local postgres db in a separate container. 
+    - Airflow accessing to local network.
+    - Specific dags for local ingestions.
+    - dbt core installation and usage to run transformation pipelines.
 
 - Custom dashboard with BQ client for python. (bq api use) or postgresql client for python.
   - Develop Django app for this dashboard.
@@ -315,10 +320,14 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
     - Fix spark can not partition yearly fact table by date
     - Check why Dataproc buckets are not deleted after cluster deletion.
     - Check low CPU usage in DataProc clusters.
-  - Improve the performance of postgres
-    - Partition.
-    - Clustering.
-    - Implement create or replace table when creating tables.
+  - dbt local postgres
+    - dbt does not set primary key to materialized tables. https://github.com/dbt-labs/postgres  
+    - If then else in dbt macros are not standarized. Works with BQ but it is different for PG. Fix it. The same happens with date_trunc function.  
+    - Improve the performance of postgres
+      - Partition.
+      - Clustering.
+    - ~~Implement create or replace table when creating tables.~~
+    - The definition of the sources in dbt macros is written in code, and not parametrized as models. This causes differences for BQ and PG. Form instance, ' vs " and date_trunc. 
   
 - Cost analysis (europe-west6)
   
@@ -329,4 +338,5 @@ In case you have 8GB, modify the parameter `max_active_runs` to 1 in `aws_bq_pas
     - $0.026 per GB per month. First 5GB is free each month.
   
 - Bugs
+  - Check setup_vm.sh if the creation of the bin directory is correct.
   - stations source text file has wmo_id. This field shopud be integer type

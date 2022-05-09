@@ -113,7 +113,8 @@ with DAG(
     )
 
     CREATE_TABLE_QUERY = f"""
-      CREATE UNLOGGED TABLE IF NOT EXISTS "{PG_SCHEMA}"."{table_name}" (
+      DROP TABLE IF EXISTS "{PG_SCHEMA}"."{table_name}" CASCADE;
+      CREATE UNLOGGED TABLE "{PG_SCHEMA}"."{table_name}" (
         index SERIAL PRIMARY KEY,
         id CHAR(11),
         date DATE,
