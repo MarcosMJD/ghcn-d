@@ -28,6 +28,8 @@ provider "google" {
   // credentials = file(var.credentials)  # Use this if you do not want to set env-var GOOGLE_APPLICATION_CREDENTIALS
 }
 
+/*
+# Local implementation with postgres not completed yet
 resource "postgresql_database" "ghcn-d" {
   name = "ghcn-d"
 }
@@ -36,8 +38,9 @@ resource "postgresql_schema" "ghcn-d" {
   name  = "ghcnd"
   database = "ghcn-d"
 }
+*/
 
-/*
+
 # Data Lake Bucket
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
@@ -83,4 +86,4 @@ resource "google_bigquery_dataset" "dataset_dbt_prod" {
   project    = var.PROJECT
   location   = var.REGION
 }
-*/
+
