@@ -8,7 +8,7 @@
   - [GCP SDK credentials](#gcp-sdk-credentials)
   - [Option A: Install all applications automatically](#option-a-install-all-applications-automatically)
     - [Clone repo in vm instance](#clone-repo-in-vm-instance)
-    - [Execute setup_vm.sh script](#execute-setup_vmsh-script)
+    - [Execute setup\_vm.sh script](#execute-setup_vmsh-script)
   - [Option B: Install applications manually](#option-b-install-applications-manually)
     - [Remote access to VM instance](#remote-access-to-vm-instance)
     - [Download and install Anaconda for Linux in the vm instance](#download-and-install-anaconda-for-linux-in-the-vm-instance)
@@ -132,8 +132,8 @@ In case you do not have it, you can use git bash, Windows command or similar. Ch
 
     mkdir bin
     cd bin
-    wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
-    bash Anaconda3-2021.11-Linux-x86_64.sh
+    wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
+    bash Anaconda3-2022.10-Linux-x86_64.sh
       After installation choose yes to initialize Anaconda (adds some stuff in .bashrc to be executed each time user is logged in)
     type `source .bashrc` to login again and activate base environment
 
@@ -189,7 +189,7 @@ Download the binary to the /bin directory
 
     cd 
     cd bin
-    SPARK_VERSION=3.2.1
+    SPARK_VERSION=3.2.3
     HADOOP_VERSION=3.2
     SPARK_HOME="/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}"
     SPARK_BIN="spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
@@ -208,9 +208,9 @@ Download the binary to the /bin directory
     export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.google/credentials/google_credentials.json"
     export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
     export PATH="${JAVA_HOME}/bin:${PATH}"
-    export SPARK_VERSION=3.2.1
+    export SPARK_VERSION=3.2.3
     export HADOOP_VERSION=3.2
-    export SPARK_HOME=/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}' 
+    export SPARK_HOME="/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}"
     export PATH="${SPARK_HOME}/bin:${PATH}"
     export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
     export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.3-src.zip:$PYTHONPATH"

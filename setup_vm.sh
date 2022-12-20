@@ -67,7 +67,7 @@ echo -e "\nInstalling Spark with Hadoop...\n"
 ## Spark files and Variables
 cd 
 cd bin
-SPARK_VERSION=3.2.1
+SPARK_VERSION=3.2.3
 HADOOP_VERSION=3.2
 SPARK_HOME="/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}"
 SPARK_BIN="spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
@@ -89,7 +89,7 @@ echo -e 'export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"' >> ~/.bashrc
 echo -e 'export PATH="${JAVA_HOME}/bin:${PATH}"' >> ~/.bashrc
 echo -e '' >> ~/.bashrc
 
-echo -e 'export SPARK_VERSION=3.2.1' >> ~/.bashrc
+echo -e 'export SPARK_VERSION=3.2.3' >> ~/.bashrc
 echo -e 'export HADOOP_VERSION=3.2' >> ~/.bashrc
 echo -e 'export SPARK_HOME=/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}' >> ~/.bashrc
 echo -e 'export PATH="${SPARK_HOME}/bin:${PATH}"' >> ~/.bashrc
@@ -108,7 +108,7 @@ echo "anaconda-navigator version $(anaconda-navigator --version)"
 anaconda --version
 conda --version
 java -version
-${SPARK_HOME}/bin/spark-submit --version --version # Path var is not updated yet. 
+${SPARK_HOME}/bin/spark-submit --version # Path var is not updated yet. 
 
 echo -e "\nSetting up Docker without sudo setup...\n"
 sudo groupadd docker 

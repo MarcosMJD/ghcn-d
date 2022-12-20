@@ -46,7 +46,7 @@ RUN DOWNLOAD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/goo
 ## Finish GCP SDK files and variables
 
 ## Spark files and Variables
-ARG SPARK_VERSION=3.2.1
+ARG SPARK_VERSION=3.2.3
 ENV SPARK_HOME=/opt/spark
 ENV PATH="${SPARK_HOME}/bin/:${PATH}"
 RUN DOWNLOAD_URL="https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.2.tgz" \
